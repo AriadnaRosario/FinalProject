@@ -6,7 +6,7 @@ using namespace std;
 void createTask(tasklist& Tasklist) {
     Task t;
 
-    cout << endl << " --- CREATE TASK --- " << endl;
+    cout << " --- CREATE TASK --- " << endl;
 
     cout << "Enter the ID of the task: ";
     while (true) {
@@ -17,12 +17,12 @@ void createTask(tasklist& Tasklist) {
             cin.clear();
             cin.ignore(1000, '\n');
         }
-        else if (cin.peek() != '\n') {
-            cout << "Invalid Id, try again: ";
+        else if (Tasklist.searchList(t.id) != nullptr) {
+            cout << "ID already exists. Enter a different ID: ";
             cin.ignore(1000, '\n');
         }
         else {
-            cin.ignore();
+            cin.ignore(1000, '\n');
             break;
         }
     }
@@ -108,6 +108,7 @@ int menu() {
         cout << "======================================== " << endl;
         cout << "Select an option: ";
         cin >> option;
+	cout << endl;
         
         if (option < 0 || option > 12 )
             cout << "Invalid option, try again" << endl << endl;

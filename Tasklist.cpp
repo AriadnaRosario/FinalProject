@@ -34,7 +34,7 @@ void tasklist::showList() {
         } else {
             cout << "Pending";
         } 
-        cout << endl;
+        cout << endl << endl;
         list = list->next;
     }
 }
