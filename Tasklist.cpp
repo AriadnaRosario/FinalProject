@@ -1,4 +1,5 @@
 #include "Tasklist.h"
+#include "Task.h"
 
 tasklist::tasklist() {
     head = nullptr;
@@ -22,14 +23,14 @@ void tasklist::showList() {
     }
 
     while (list != nullptr) {
-        cout << "ID: " << "[" << list->task.id << "]" << endl;
-        cout << "title: " << list->task.title << endl;
-        cout << "Description: " << list->task.description << endl;
-        cout << "Course: " << list->task.course << endl;
-        cout << "Priority: " << list->task.priority << endl;
-        cout << "Due Date: " << list->task.dueDate << endl;
+        cout << "ID: " << "[" << list->task.getId() << "]" << endl;
+	cout << "title: " << list->task.getTitle() << endl;
+        cout << "Description: " << list->task.getDescription() << endl;
+        cout << "Course: " << list->task.getCourse() << endl;
+        cout << "Priority: " << list->task.getPriority() << endl;
+        cout << "Due Date: " << list->task.getdueDate() << endl;
         cout << "Status: " ;
-        if (list->task.completed) {
+        if (list->task.isCompleted()) {
             cout << "Completed";
         } else {
             cout << "Pending";
@@ -43,7 +44,7 @@ Node* tasklist::searchList(int id) {
     Node* list = head;
 
     while (list != nullptr) {
-        if (list->task.id == id) {
+        if (list->task.getId() == id) {
             return list;
         }
         list = list->next;
@@ -55,7 +56,7 @@ void tasklist::removeList(int id) {
     Node* list = head;
     Node* before = nullptr;
 
-    while (list != nullptr && list->task.id != id) {
+    while (list != nullptr && list->task.getId() != id) {
         before = list;
         list = list->next;
     }

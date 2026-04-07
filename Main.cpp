@@ -5,50 +5,66 @@ using namespace std;
 
 void createTask(tasklist& Tasklist) {
     Task t;
+    int id;
+    string title;
+    string description;
+    string course;
+    int priority;
+    string dueDate;
 
     cout << " --- CREATE TASK --- " << endl;
-
+    
     cout << "Enter the ID of the task: ";
     while (true) {
-        cin >> t.id;
+        cin >> id;
 
         if (cin.fail()) {
-            cout << "Invalid Id, try again: ";
+            cout << "Invalid ID, try again: ";
             cin.clear();
             cin.ignore(1000, '\n');
         }
-        else if (Tasklist.searchList(t.id) != nullptr) {
+        else if (cin.peek() != '\n') {
+            cout << "Invalid ID, try again: ";
+            cin.ignore(1000, '\n');
+        }
+        else if (Tasklist.searchList(id) != nullptr) {
             cout << "ID already exists. Enter a different ID: ";
             cin.ignore(1000, '\n');
         }
-        else {
-            cin.ignore(1000, '\n');
+            else {
+        cin.ignore(1000, '\n');
             break;
         }
     }
+    t.setId(id);
 
     cout << "Enter title: ";
-    getline(cin, t.title);
+    getline(cin, title);
+    t.setTitle(title);
 
     cout << "Enter description: ";
-    getline(cin, t.description);
+    getline(cin, description);
+    t.setDescription(description);
 
     cout << "Enter course: ";
-    getline(cin, t.course);
+    getline(cin, course);
+    t.setCourse(course);
     
     do {
         cout << "Enter priority (1=High, 2=Medium, 3=Low): ";
-        cin >> t.priority;
+        cin >> priority;
 
-        if (t.priority < 1 || t.priority > 3) {
+        if (priority < 1 || priority > 3) {
             cout << "Invalid option, try again" << endl;
         }
 
-    } while (t.priority < 1 || t.priority > 3);
+    } while (priority < 1 || priority > 3);
     cin.ignore();
+    t.setPriority(priority);
 
     cout << "Enter due date (YYYY-MM-DD): ";
-    getline(cin, t.dueDate);
+    getline(cin, dueDate);
+    t.setdueDate(dueDate);
 
     Tasklist.insertList(t);
 
@@ -68,13 +84,13 @@ void searchTask(tasklist& Tasklist) {
         Task t = result->task;
 
         cout << endl << " Task found: " << endl;
-        cout << "[" << t.id << "] " << t.title << endl;
-        cout << "Course: " << t.course << endl;
-        cout << "Description: " << t.description << endl;
-        cout << "Priority: " << t.priority << endl;
-        cout << "Due Date: " << t.dueDate << endl;
+        cout << "[" << t.getId() << "] " << t.getTitle() << endl;
+        cout << "Course: " << t.getCourse() << endl;
+        cout << "Description: " << t.getDescription() << endl;
+        cout << "Priority: " << t.getPriority() << endl;
+        cout << "Due Date: " << t.getdueDate() << endl;
         cout << "Status: ";
-        if (t.completed) {
+        if (t.isCompleted()) {
             cout << "Completed";
         } else {
             cout << "Pending";
@@ -108,7 +124,7 @@ int menu() {
         cout << "======================================== " << endl;
         cout << "Select an option: ";
         cin >> option;
-	cout << endl;
+	    cout << endl;
         
         if (option < 0 || option > 12 )
             cout << "Invalid option, try again" << endl << endl;
@@ -128,45 +144,46 @@ int main() {
                 createTask(Tasklist);
                 break;
 
-            case 2:
+                case 2:
                 Tasklist.showList();
                 break;
 
-            case 3:
+                case 3:
                 searchTask(Tasklist);
+                break;	
+		
+                case 4:
                 break;
-            
-            case 4:
-                break;
-            case 5: {
+                
+                case 5: {
                 cout << "Enter ID to delete: ";
                 cin >> id;
                 Tasklist.removeList(id);
                 break;
-            }
+                }
             
-            case 6:
+                case 6:
                 break;
             
-            case 7:
+                case 7:
                 break;
             
-            case 8:
+                case 8:
                 break;
             
-            case 9:
+                case 9:
                 break;
            
-            case 10:
-		break;
+                case 10:
+	        break;
             
-            case 11:
+                case 11:
                 break;
                 
-            case 12:
+                case 12:
                 break; 
                 
-            case 0:
+                case 0:
                 cout << "Exit..." << endl;
                 break;
             }    
