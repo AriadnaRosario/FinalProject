@@ -1,9 +1,13 @@
 #include <iostream>
 #include "Tasklist.h"
+#include "Stack.h"
+#include "Queue.h"
+#include "HashTable.h"
 
 using namespace std;
 
-void createTask(tasklist& Tasklist) {
+//Crea una tarea
+void createTask(tasklist& Tasklist, Stack& historial, Queue& pending, HashTable& hash) {
     Task t;
     int id;
     string title;
@@ -27,7 +31,7 @@ void createTask(tasklist& Tasklist) {
             cout << "Invalid ID, try again: ";
             cin.ignore(1000, '\n');
         }
-        else if (Tasklist.searchList(id) != nullptr) {
+        else if (hash.exists(id)) {
             cout << "ID already exists. Enter a different ID: ";
             cin.ignore(1000, '\n');
         }
@@ -67,40 +71,45 @@ void createTask(tasklist& Tasklist) {
     t.setdueDate(dueDate);
 
     Tasklist.insertList(t);
+    pending.enqueue(t);
+    historial.push("The task was created " + to_string(id));
+    hash.insert(t);
 
     cout << "The Task was created successfully";
 }
 
-void searchTask(tasklist& Tasklist) {
+//Busca una tarea usando la tabla hash
+void searchTask(HashTable& hash) {
     int id;
 
     cout << endl << " --- SEARCH TASK --- " << endl;
     cout << "Enter the ID: ";
     cin >> id;
 
-    Node* result = Tasklist.searchList(id);
+    Task* result = hash.search(id);
 
     if (result != nullptr) {
-        Task t = result->task;
-
-        cout << endl << " Task found: " << endl;
-        cout << "[" << t.getId() << "] " << t.getTitle() << endl;
-        cout << "Course: " << t.getCourse() << endl;
-        cout << "Description: " << t.getDescription() << endl;
-        cout << "Priority: " << t.getPriority() << endl;
-        cout << "Due Date: " << t.getdueDate() << endl;
+        cout << endl << "Task found:" << endl;
+        cout << "[" << result->getId() << "] " << result->getTitle() << endl;
+        cout << "Course: " << result->getCourse() << endl;
+        cout << "Description: " << result->getDescription() << endl;
+        cout << "Priority: " << result->getPriority() << endl;
+        cout << "Due Date: " << result->getdueDate() << endl;
         cout << "Status: ";
-        if (t.isCompleted()) {
+
+        if (result->isCompleted()) {
             cout << "Completed";
         } else {
             cout << "Pending";
         }
+
         cout << endl;
     } else {
-        cout << "The task is not on the list" << endl;
+        cout << "The task is not in the hash table." << endl;
     }
 }
 
+//Muestra el menu 
 int menu() {
     int option;
     
@@ -133,15 +142,19 @@ int menu() {
 
 }
 
+//Programa principal
 int main() {
     tasklist Tasklist;
+    Stack historial;
+    Queue pending;
+    HashTable hash;
     int option, id;
     
         do {
             option = menu();
             switch (option) {
                 case 1:
-                createTask(Tasklist);
+                createTask(Tasklist, historial, pending, hash);
                 break;
 
                 case 2:
@@ -149,18 +162,19 @@ int main() {
                 break;
 
                 case 3:
-                searchTask(Tasklist);
-                break;	
-		
+                searchTask(hash);
+                break;
+            
                 case 4:
                 break;
-                
-                case 5: {
+
+		case 5: 
                 cout << "Enter ID to delete: ";
                 cin >> id;
                 Tasklist.removeList(id);
+                hash.remove(id);
+                historial.push("The task was removed " + to_string(id));
                 break;
-                }
             
                 case 6:
                 break;
@@ -172,10 +186,12 @@ int main() {
                 break;
             
                 case 9:
+                historial.show();
                 break;
            
                 case 10:
-	        break;
+                pending.show();
+                break;
             
                 case 11:
                 break;
