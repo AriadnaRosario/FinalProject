@@ -17,6 +17,7 @@ public:
     void showList();
     Node* searchList(int id);
     void removeList(int id);
+    void showPriority(int priority);
 private:
     Node* head;    
 };

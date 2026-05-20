@@ -3,6 +3,7 @@
 #include "Stack.h"
 #include "Queue.h"
 #include "HashTable.h"
+#include "Graph.h"
 
 using namespace std;
 
@@ -109,6 +110,167 @@ void searchTask(HashTable& hash) {
     }
 }
 
+//Remueve una tarea por el ID
+void deleteTask(tasklist& Tasklist, HashTable& hash, Queue& pending, Stack& historial) {
+    int id;
+    
+    cout << "Enter ID to delete: ";
+    cin >> id;
+    Tasklist.removeList(id);
+    hash.remove(id);
+    pending.removeTask(id);
+    historial.push("The task was removed " + to_string(id));
+}    
+
+//Permite marcar la tarea como completada
+void completeTask(tasklist& Tasklist, HashTable& hash, Queue& pending, Stack& historial, Graph& graph) {
+    int id;
+    
+    cout << "Enter ID of the task that you want to mark as completed: ";
+    cin >> id;
+
+    Node* node = Tasklist.searchList(id);
+
+    if (node == nullptr) {
+        cout << "Task not found" << endl;
+    }
+    else {
+        if (graph.canComplete(Tasklist, id)) {
+        node->task.markedCompleted();
+        pending.removeTask(id);
+        hash.update(node->task);
+        historial.push("Task completed " + to_string(id));
+        cout << "Task completed successfully" << endl;
+        }
+    }
+}
+
+//Muestra las tareas por su prioridad
+void viewPriority(tasklist& Tasklist) {
+    int priority;
+    
+    do {
+        cout << "Enter priority to view (1=High, 2=Medium, 3=Low): ";
+        cin >> priority;
+
+        if (priority < 1 || priority > 3) {
+        cout << "Invalid option, try again" << endl;
+        }
+
+     } while (priority < 1 || priority > 3);   
+    Tasklist.showPriority(priority);
+}
+
+//AC1ade dependencias entre tareas
+void manageDependencies(tasklist& Tasklist, Graph& graph, Stack& historial) {
+    int taskId;
+    int prereqId;
+    
+    cout << endl << " --- MANAGE DEPENDENCIES --- " << endl;
+    cout << "Enter the ID of the source task: ";
+    cin >> taskId;
+                
+    if (Tasklist.searchList(taskId) == nullptr) {
+        cout << "Invalid, task does not exist." << endl;
+        return;
+    }
+    cout << "Enter the ID of the prerequisite task: ";
+    cin >> prereqId;
+
+    if (Tasklist.searchList(prereqId) == nullptr) {
+        cout << "Invalid, prerequisite task does not exist." << endl;
+        return;
+    }
+                
+    graph.addDependency(taskId, prereqId, Tasklist);
+    historial.push("Dependency added: Task " + to_string(taskId) + " depends on Task " + to_string(prereqId));
+}    
+
+//Permite editar una tarea
+void editTask(tasklist& Tasklist, HashTable& hash, Stack& historial) {
+    int id, option;
+    string title;
+    string description;
+    string course;
+    int priority;
+    string date;
+
+    cout << "Enter task ID to edit: ";
+    cin >> id;
+
+    Node* task = Tasklist.searchList(id);
+
+    if (task == nullptr) {
+        cout << "Task not found" << endl;
+        return;
+    }
+
+    do {
+        cout << endl << "What do you want to edit?" << endl;
+        cout << "1. Title" << endl;
+        cout << "2. Description" << endl;
+        cout << "3. Course" << endl;
+        cout << "4. Priority" << endl;
+        cout << "5. Due date" << endl;
+        cout << "0. Exit" << endl;
+        cout << "Select an option: ";
+        cin >> option;
+        cout << endl;
+        cin.ignore();
+
+        switch(option) {
+
+        case 1: {
+            cout << "Enter new title: ";
+            getline(cin, title);
+            task->task.setTitle(title);
+            historial.push("Edited title of task ID " + to_string(id)) ;
+            break;
+        }
+
+        case 2: {
+            cout << "Enter new description: ";
+            getline(cin, description);
+            task->task.setDescription(description);
+            historial.push("Edited description of task ID " + to_string(id));
+            break;
+        }
+
+        case 3: {
+            cout << "Enter new course: ";
+            getline(cin, course);
+            task->task.setCourse(course);
+            historial.push( "Edited course of task ID " + to_string(id)) ;
+            break;
+        }
+
+        case 4: {
+            cout << "Enter new priority: ";
+            cin >> priority;
+            task->task.setPriority(priority);
+            historial.push("Edited priority of task ID "+ to_string(id));
+            break;
+        }
+
+        case 5: {
+            cin.ignore();
+            cout << "Enter new due date: ";
+            getline(cin, date);
+            task->task.setdueDate(date);
+            historial.push("Edited due date of task ID " + to_string (id));
+            break;
+        }    
+
+        case 0:
+            cout << "Exit..." << endl;
+            break;
+        }
+        
+    } while (option < 0 || option > 5);
+
+    cout << "Task was successfully edited" << endl;
+}
+
 //Muestra el menu 
 int menu() {
     int option;
@@ -148,8 +310,8 @@ int main() {
     Stack historial;
     Queue pending;
     HashTable hash;
-    int option, id;
-    
+    Graph graph;
+    int option;
         do {
             option = menu();
             switch (option) {
@@ -166,23 +328,23 @@ int main() {
                 break;
             
                 case 4:
+                editTask(Tasklist, hash, historial);
                 break;
-
-		case 5: 
-                cout << "Enter ID to delete: ";
-                cin >> id;
-                Tasklist.removeList(id);
-                hash.remove(id);
-                historial.push("The task was removed " + to_string(id));
+                
+                case 5: 
+                deleteTask(Tasklist, hash, pending, historial);
                 break;
             
                 case 6:
+                completeTask(Tasklist, hash, pending, historial, graph);
                 break;
-            
-                case 7:
+                
+                case 7: 
+                viewPriority(Tasklist);
                 break;
             
                 case 8:
+                manageDependencies(Tasklist, graph, historial);
                 break;
             
                 case 9:
@@ -207,3 +369,4 @@ int main() {
 
     return 0;
 }
+     

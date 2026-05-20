@@ -36,3 +36,31 @@ void Queue::show() {
         list = list->next;
     }
 }
+
+//Elimina tareas de la cola 
+void Queue::removeTask(int id) {
+
+    QueNode* current = front;
+    QueNode* before = nullptr;
+
+    while (current != nullptr) {
+        if (current->task.getId() == id) {
+            if (before == nullptr) {
+                front = current->next;
+                if (current == back) {
+                    back = nullptr;
+                }
+            } else {
+                before->next = current->next;
+                if (current == back) {
+                    back = before;
+                }
+            }
+            delete current;
+            return;
+        }
+
+    before = current;
+    current = current->next;
+    }
+}

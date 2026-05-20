@@ -15,6 +15,7 @@ public:
     Queue();
     void enqueue(Task t);
     void show();
+    void removeTask(int id);
     
 private:
     QueNode* front;
