@@ -14,7 +14,18 @@ The main objective of the system is to help the student community manage their a
 
 ## Decription
 
-The program allows users to:
+This project is a terminal-based acdemic task planner developed in C++. The system allows users to create, search, edit, delete, prioritized, add dependencies, action history and file persistence to tasks. It uses custom implementations of the used data structures.
+
+## Data structures used
+
+- Link list is used to store all tasks
+- Stack is used to store action histoy 
+- Queue is used to store pending tasks
+- Hash Table is used for fast searching
+- Graph is used to manage tasks dependencies
+- 
+## Features
+
 - Create tasks
 - Show tasks
 - Search tasks
@@ -24,14 +35,14 @@ The program allows users to:
 - View tasks as priority
 - Manage tasks dependencies
 - View action history
-- View pendeing Tasks
-- Sava data
-- Load data from files
+- View pending tasks
+- Sava tasks to file
+- Load tasks from files
 
-## Data structures used
+## Compilation
 
-- Link list is used to store all tasks
-- Stack is used to store action histoy 
-- Queue is used to store pending tasks
-- Hash Table is used for fast searching
-- Graph is used to manage tasks dependencies
+compile using g++ main.cpp Task.cpp Tasklist.cpp Queue.cpp Stack.cpp HashTable.cpp Graph.cpp 
+
+## Execution
+
+./a.out
