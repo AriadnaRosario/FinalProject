@@ -1,6 +1,6 @@
 #include "Task.h"
 
-// Constructor (esta vacC-o)
+// Constructor (is empty)
 Task::Task() {
         id = 0;
         title = "";
@@ -64,4 +64,8 @@ void Task::setdueDate(string _date) {
 
 void Task::markedCompleted() {
     completed = true;
+}
+
+void Task::setCompleted(bool status) {
+    completed = status;
 }

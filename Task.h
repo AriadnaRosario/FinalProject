@@ -23,6 +23,7 @@ public:
     void setPriority(int _priority);
     void setdueDate(string _date);
     void markedCompleted();
+    void setCompleted(bool status);
     
 private:
     int id;

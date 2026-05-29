@@ -1,12 +1,14 @@
 #include "Tasklist.h"
+#include <fstream>
+#include <sstream>
 
 //Constructor
-//Se inicializa vacio
+//It inicialise empty
 tasklist::tasklist() { 
     head = nullptr;
 }
 
-//Inserta una tarea al pricipio de la lista
+//Insert a task at the begining og the list
 void tasklist::insertList(Task t) {
     Node* newNode = new Node;
     newNode->task = t;    
@@ -16,7 +18,7 @@ void tasklist::insertList(Task t) {
     
 }    
     
-//Muestra todas las tareas en la lista 
+//Shows all the task on the list 
 void tasklist::showList() {
     Node* list = head;
 
@@ -43,8 +45,8 @@ void tasklist::showList() {
     }
 }
 
-//Busca una tarea por el ID en la lista 
-//Si encontrado retorna el nodo si no nullptr
+//Searches a task by ID in the list
+//If found it returns the node if not nullptr
 Node* tasklist::searchList(int id) {
     Node* list = head;
 
@@ -57,8 +59,7 @@ Node* tasklist::searchList(int id) {
     return nullptr;
 }
 
-
-//Remueve una tarea en la lista por ID
+//Removes a task in the list by ID
 void tasklist::removeList(int id) {
     Node* list = head;
     Node* before = nullptr;
@@ -83,7 +84,7 @@ void tasklist::removeList(int id) {
     cout << "The task was removed" << endl;
 }
 
-//Muestras tareas por prioridad
+//Shows tasks by priorities
 void tasklist::showPriority(int priority) {
     Node* list = head;
     bool found = false;
@@ -114,4 +115,77 @@ void tasklist::showPriority(int priority) {
     if (!found) {
         cout << "No tasks with that priority." << endl;
     }
+}
+
+//Save the tasks in the list in a file
+void tasklist::saveData(string filename) {
+    
+    if (head == nullptr) {
+    cout << "No tasks to save" << endl;
+    return;
+    }
+    
+    ofstream file(filename);
+    Node* current = head;
+
+    while (current != nullptr) {
+        Task t = current->task;
+
+        file << t.getId() << "," << t.getTitle() << "," << t.getDescription() << ","
+        << t.getCourse() << "," << t.getPriority() << "," << t.getdueDate() << ","
+        << t.isCompleted() << endl;
+
+        current = current->next;
+    }
+
+    file.close();
+    
+    cout << "Tasks saved successfully" << endl;
+}
+
+//Loads the task from the file
+void tasklist::loadData(string filename, HashTable& hash, Queue& pending) {
+    ifstream file(filename);
+
+    if (!file) {
+        cout << "No file found" << endl;
+        return;
+    }
+
+    string line;
+
+    while (getline(file, line)) {
+        stringstream ss(line);
+
+        string id, title, description, course, priority, dueDate, completed;
+
+        getline(ss, id, ',');
+        getline(ss, title, ',');
+        getline(ss, description, ',');
+	getline(ss, course, ',');
+        getline(ss, priority, ',');
+        getline(ss, dueDate, ',');
+        getline(ss, completed, ',');
+
+        Task t;
+
+        t.setId(stoi(id));
+        t.setTitle(title);
+        t.setDescription(description);
+        t.setCourse(course);
+        t.setPriority(stoi(priority));
+        t.setdueDate(dueDate);
+        t.setCompleted(stoi(completed));
+
+        insertList(t);
+        hash.insert(t);
+
+        if (!t.isCompleted()) {
+            pending.enqueue(t);
+        }
+    }
+
+    file.close();
+    
+    cout << "Tasks loaded successfully" << endl;
 }

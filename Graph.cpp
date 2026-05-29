@@ -1,27 +1,30 @@
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include "Graph.h"
 
 using namespace std;
 
-//Registra dependencias entre tareas
-void Graph::addDependency(int taskId, int prereqId, tasklist& tasks) {
+//Registar a Dependency between tasks
+//Returns true if a dependency was added if not false
+bool Graph::addDependency(int taskId, int prereqId, tasklist& tasks)
+{
     if (taskId == prereqId) {
         cout << "Invalid, a task cannot depend on itself" << endl;
-        return;
+        return false;
     }
 
     graph[taskId].push_back(prereqId);
-
     if (hasCycle()) {
         graph[taskId].pop_back();
         cout << "Dependency rejected" << endl;
-        return;
+        return false;
     }
-
     cout << "Dependency added successfully" << endl;
+    return true;
 }
 
-//Muestra las dependencias en el grafo
+//Shows the Dependenciesin the graph
 void Graph::showDependency() {
     
     cout << endl << "===== Task Dependencies =====" << endl;
@@ -46,8 +49,8 @@ void Graph::showDependency() {
     }
 }
 
-//Verifica si hay ciclos en el grafo
-//Devuelve verdadero si hay algun ciclo entre dependencias
+//Checks if they are any cycles in the graph
+//Returnes true if they are cycles  etween dependency
 bool Graph::hasCycle() {
     bool visited[MAX_TASKS] = {false};
     bool recursion[MAX_TASKS] = {false};
@@ -62,8 +65,8 @@ bool Graph::hasCycle() {
     return false;
 }
 
-//Verifica si la tarea se puede completar por sus prerequisitos
-//Devuelve verdadero si los prerequisitos estan completados
+//Checks if the task can be completed by its prerequist
+//Returns true if the prerequisits are completed
 bool Graph::canComplete(tasklist& tasks, int taskId) {
     
     if (tasks.searchList(taskId) == nullptr) {
@@ -83,8 +86,8 @@ bool Graph::canComplete(tasklist& tasks, int taskId) {
     return true;
 }
 
-//Detecta si hay ciclos en el grafo
-//Devuelve verdadero si encuentra un ciclo
+//Detects if they are cycles in the graph
+//returns true if its finds a cycle
 bool Graph::cycle(int taskId, bool visited[], bool recursion[]) {
     visited[taskId] = true;
     recursion[taskId] = true;
@@ -102,4 +105,43 @@ bool Graph::cycle(int taskId, bool visited[], bool recursion[]) {
 
     recursion[taskId] = false;
     return false;
+}
+
+//Save the dependencies in a file
+void Graph::saveDependencies(string filename) {
+    ofstream file(filename);
+    
+    for (int taskId = 0; taskId < MAX_TASKS; taskId++) {
+        for (int prereqId : graph[taskId]) {
+            file << taskId << "," << prereqId << endl;
+        }
+    }
+
+    file.close();
+
+    cout << "Dependencies saved successfully" << endl;
+}
+
+//Loads the dependencies from the file
+void Graph::loadDependencies(string filename, tasklist& tasks) {
+    ifstream file(filename);
+
+    if (!file) {
+        cout << "No dependency file found" << endl;
+        return;
+    }
+
+    string line;
+    while (getline(file, line)) {
+        stringstream ss(line);
+        string taskId, prereqId;
+        getline(ss, taskId, ',');
+        getline(ss, prereqId, ',');
+
+        addDependency(stoi(taskId), stoi(prereqId), tasks);
+    }
+
+    file.close();
+
+    cout << "Dependencies loaded successfully" << endl;
 }

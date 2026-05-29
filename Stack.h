@@ -15,6 +15,8 @@ public:
     Stack();
     void push(string action);
     void show();
+    void saveHistory(string filename);
+    void loadHistory(string filename);
 private:
     StkNode* head;
 };

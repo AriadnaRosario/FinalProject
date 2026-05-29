@@ -1,6 +1,6 @@
 #include "HashTable.h"
 
-//Constructor (esta vacC-o)
+//Constructor (is empty)
 HashTable::HashTable() {
     for (int i = 0; i < TABLE_SIZE; i++) {
         table[i] = nullptr;
@@ -20,12 +20,12 @@ HashTable::~HashTable() {
     }
 }
 
-//convierte un ID en un C-ndice de la tabla
+//Converts an ID to an index of the table
 int HashTable::hashFunction(int id) {
     return id % TABLE_SIZE;
 }
 
-//Inserta una tarea en la tabla
+//Inserts a task in the table
 void HashTable::insert(Task t) {
     int index = hashFunction(t.getId());
     HashNode* current = table[index];
@@ -44,8 +44,8 @@ void HashTable::insert(Task t) {
     table[index] = newNode;
 }
 
-//Busca una tarea por el ID 
-//Si encontrado devuelce el puntero si no nullptr
+//Searches a task by ID
+//If found it returns the pointer if not nullptr
 Task* HashTable::search(int id) {
     int index = hashFunction(id);
     HashNode* current = table[index];
@@ -59,8 +59,8 @@ Task* HashTable::search(int id) {
     return nullptr;
 }
 
-//Elimina una tarea usando el ID
-//devuelve verdadero si se eliminC3
+//Eliminates a task by ID
+//Returns true if eliminated
 bool HashTable::remove(int id) {
     int index = hashFunction(id);
     HashNode* current = table[index];
@@ -82,7 +82,7 @@ bool HashTable::remove(int id) {
     return false; 
 }
 
-//Actualiza la informacion de la tarea en la tabla
+//Upadates the information of the task in the table
 void HashTable::update(Task t) {
     int index = hashFunction(t.getId());
     HashNode* current = table[index];
@@ -98,7 +98,8 @@ void HashTable::update(Task t) {
 }
 
 //Verifica si existe una tarea en la tabla
-//Devuelve verdadero si se encuentra si no falso
+//Checks if a task exist in the table
+//Returns true if found if not false
 bool HashTable::exists(int id) {
     return search(id) != nullptr;
 }

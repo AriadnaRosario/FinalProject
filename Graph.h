@@ -3,15 +3,18 @@
 #include <vector>
 #include "Task.h"
 #include "Tasklist.h"
+#include "Stack.h"
 
 using namespace std;
 
 class Graph {
 public:
-    void addDependency(int taskId, int prereqId, tasklist& tasks);
+    bool addDependency(int taskId, int prereqId, tasklist& tasks);
     void showDependency();
     bool hasCycle();
     bool canComplete(tasklist& tasks, int taskId);
+    void saveDependencies(string filename);
+    void loadDependencies(string filename, tasklist& tasks);
 private:
     static const int MAX_TASKS = 1000;
     vector<int> graph[MAX_TASKS];

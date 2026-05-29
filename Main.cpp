@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include "Tasklist.h"
 #include "Stack.h"
 #include "Queue.h"
@@ -7,7 +8,48 @@
 
 using namespace std;
 
-//Crea una tarea
+//Validates that the date is not before 2026 and that it is a valid date
+bool validDate(string date) {
+    if (date.length() != 10) {
+        return false;
+    }
+
+    if (date[4] != '-' || date[7] != '-') {
+        return false;
+    }
+
+    int year = stoi(date.substr(0, 4));
+    int month = stoi(date.substr(5, 2));
+    int day = stoi(date.substr(8, 2));
+
+    if (year < 2026) {
+        return false;
+    }
+
+    if (month < 1 || month > 12) {
+        return false;
+    }
+
+    int daysInMonth;
+
+    if (month == 2) {
+        daysInMonth = 28;
+    }
+    else if (month == 4 || month == 6 || month == 9 || month == 11) {
+        daysInMonth = 30;
+    }
+    else {
+        daysInMonth = 31;
+    }
+
+    if (day < 1 || day > daysInMonth) {
+        return false;
+    }
+
+    return true;
+}
+
+//Creates a task
 void createTask(tasklist& Tasklist, Stack& historial, Queue& pending, HashTable& hash) {
     Task t;
     int id;
@@ -55,20 +97,23 @@ void createTask(tasklist& Tasklist, Stack& historial, Queue& pending, HashTable&
     getline(cin, course);
     t.setCourse(course);
     
-    do {
-        cout << "Enter priority (1=High, 2=Medium, 3=Low): ";
+    cout << "Enter priority (1=High, 2=Medium, 3=Low): ";
+    cin >> priority;
+    
+    while (priority < 1 || priority > 3) {
+        cout << "Invalid option, try again: ";
         cin >> priority;
-
-        if (priority < 1 || priority > 3) {
-            cout << "Invalid option, try again" << endl;
-        }
-
-    } while (priority < 1 || priority > 3);
+    } 
     cin.ignore();
     t.setPriority(priority);
-
+    
     cout << "Enter due date (YYYY-MM-DD): ";
     getline(cin, dueDate);
+    
+    while (!validDate(dueDate)) {
+    cout << "Invalid date, try again: ";
+    getline(cin, dueDate);
+    }
     t.setdueDate(dueDate);
 
     Tasklist.insertList(t);
@@ -79,7 +124,7 @@ void createTask(tasklist& Tasklist, Stack& historial, Queue& pending, HashTable&
     cout << "The Task was created successfully";
 }
 
-//Busca una tarea usando la tabla hash
+//Searches a task using the hash table
 void searchTask(HashTable& hash) {
     int id;
 
@@ -110,7 +155,7 @@ void searchTask(HashTable& hash) {
     }
 }
 
-//Remueve una tarea por el ID
+// Remove a task by ID
 void deleteTask(tasklist& Tasklist, HashTable& hash, Queue& pending, Stack& historial) {
     int id;
     
@@ -122,7 +167,7 @@ void deleteTask(tasklist& Tasklist, HashTable& hash, Queue& pending, Stack& hist
     historial.push("The task was removed " + to_string(id));
 }    
 
-//Permite marcar la tarea como completada
+// Marks the task as completed
 void completeTask(tasklist& Tasklist, HashTable& hash, Queue& pending, Stack& historial, Graph& graph) {
     int id;
     
@@ -145,7 +190,7 @@ void completeTask(tasklist& Tasklist, HashTable& hash, Queue& pending, Stack& hi
     }
 }
 
-//Muestra las tareas por su prioridad
+//Show tasks by priorities
 void viewPriority(tasklist& Tasklist) {
     int priority;
     
@@ -156,12 +201,12 @@ void viewPriority(tasklist& Tasklist) {
         if (priority < 1 || priority > 3) {
         cout << "Invalid option, try again" << endl;
         }
-
-     } while (priority < 1 || priority > 3);   
+        
+    } while (priority < 1 || priority > 3);   
     Tasklist.showPriority(priority);
 }
 
-//AC1ade dependencias entre tareas
+//Adds dependecies between tasks
 void manageDependencies(tasklist& Tasklist, Graph& graph, Stack& historial) {
     int taskId;
     int prereqId;
@@ -181,12 +226,18 @@ void manageDependencies(tasklist& Tasklist, Graph& graph, Stack& historial) {
         cout << "Invalid, prerequisite task does not exist." << endl;
         return;
     }
-                
-    graph.addDependency(taskId, prereqId, Tasklist);
-    historial.push("Dependency added: Task " + to_string(taskId) + " depends on Task " + to_string(prereqId));
-}    
+    bool added = graph.addDependency(taskId, prereqId, Tasklist);
+    if (added) {
+        historial.push("Dependency added: Task " + to_string(taskId) +
+        " depends on Task " + to_string(prereqId));
+    }
+    else {
+        historial.push("Dependency rejected: Task " + to_string(taskId) +
+        " depends on Task " + to_string(prereqId));
+    }
+}
 
-//Permite editar una tarea
+//Lets you edit a task
 void editTask(tasklist& Tasklist, HashTable& hash, Stack& historial) {
     int id, option;
     string title;
@@ -253,7 +304,7 @@ void editTask(tasklist& Tasklist, HashTable& hash, Stack& historial) {
         }
 
         case 5: {
-            cin.ignore();
+           // cin.ignore();
             cout << "Enter new due date: ";
             getline(cin, date);
             task->task.setdueDate(date);
@@ -271,7 +322,7 @@ void editTask(tasklist& Tasklist, HashTable& hash, Stack& historial) {
     cout << "Task was successfully edited" << endl;
 }
 
-//Muestra el menu 
+//shows the menu 
 int menu() {
     int option;
     
@@ -304,7 +355,7 @@ int menu() {
 
 }
 
-//Programa principal
+//Main program
 int main() {
     tasklist Tasklist;
     Stack historial;
@@ -356,9 +407,17 @@ int main() {
                 break;
             
                 case 11:
+                Tasklist.saveData("tasks.txt");
+                graph.saveDependencies("dependencies.txt");
+                historial.push("Data saved to files");
+                historial.saveHistory("history.txt");
                 break;
                 
                 case 12:
+                Tasklist.loadData("tasks.txt", hash, pending);
+                graph.loadDependencies("dependencies.txt", Tasklist);
+                historial.loadHistory("history.txt");
+                historial.push("Data loaded from files");
                 break; 
                 
                 case 0:
@@ -366,7 +425,5 @@ int main() {
                 break;
             }    
         } while (option != 0);
-
-    return 0;
+	return 0;
 }
-     

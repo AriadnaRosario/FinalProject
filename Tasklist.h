@@ -1,7 +1,10 @@
 #ifndef TASKLIST_H
 #define TASKLIST_H
 #include "Task.h"
+#include "HashTable.h"
+#include "Queue.h"
 #include <iostream>
+#include <string>
 
 using namespace std;
 
@@ -18,6 +21,8 @@ public:
     Node* searchList(int id);
     void removeList(int id);
     void showPriority(int priority);
+    void saveData(string filename);
+    void loadData(string filename, HashTable& hash, Queue& pending);
 private:
     Node* head;    
 };

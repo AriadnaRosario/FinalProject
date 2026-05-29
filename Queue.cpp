@@ -1,13 +1,13 @@
 #include "Queue.h"
 
 //Constructor
-//Se inicializa vacio
+//It inicialise empty
 Queue::Queue() {
     front = nullptr;
     back = nullptr;
 }
 
-//Inserta una tarea al final de la cola
+//Inserts a task at the end of the queue
 void Queue::enqueue(Task t) {
     QueNode* newNode = new QueNode;
     newNode->task = t;
@@ -22,7 +22,7 @@ void Queue::enqueue(Task t) {
     }
 }
 
-//Muestras las tareas pendientes en la cola
+//Shows the task that are pending in the queue
 void Queue::show() {
     QueNode* list = front;
 
@@ -37,7 +37,7 @@ void Queue::show() {
     }
 }
 
-//Elimina tareas de la cola 
+//Eliminates tasks from the queue
 void Queue::removeTask(int id) {
 
     QueNode* current = front;
